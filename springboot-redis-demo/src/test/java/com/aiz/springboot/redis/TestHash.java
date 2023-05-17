@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * @ClassName TestHash
- * @Description TODO
+ * @Description 使用RedisTemplate测试TestHash
  * @Author ZhangYao
  * @Date Create in 15:55 2022/12/1
  * @Version 1.0
@@ -30,9 +30,6 @@ public class TestHash {
     @Autowired
     @Qualifier("redisTemplate")
     private RedisTemplate redisTemplate;
-
-    @Autowired
-    private RedisUtil redisUtil;
 
     /**
      * 测试基本操作
@@ -64,7 +61,6 @@ public class TestHash {
         System.out.println(JSONObject.toJSONString(user));
         Map<String, Object> cartHeadMap = JSON.parseObject(JSONObject.toJSONString(user)).getInnerMap();
         redisTemplate.opsForHash().putAll("o2om:cart:cache:0:{9343757782272}:APP:{default}", cartHeadMap);
-
 
 
 //        redisTemplate.opsForValue().set("name-key-1", "zhangyao");

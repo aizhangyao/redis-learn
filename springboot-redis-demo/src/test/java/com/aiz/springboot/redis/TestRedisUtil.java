@@ -8,19 +8,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.script.DefaultRedisScript;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-import org.springframework.scripting.ScriptSource;
-import org.springframework.scripting.support.ResourceScriptSource;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootTest
-class SpringbootRedisDemoApplicationTests {
+class TestRedisUtil {
 
     @Autowired
     @Qualifier("redisTemplate")
@@ -31,6 +23,7 @@ class SpringbootRedisDemoApplicationTests {
 
     @Test
     public void testRedisUtil() {
+        // 使用redisUtil设置String类型的值。(key,value)
         redisUtil.set("redis-util-key", "redis-util-value");
         System.out.println(redisUtil.get("redis-util-key"));
     }
@@ -79,19 +72,4 @@ class SpringbootRedisDemoApplicationTests {
         System.out.println(userGet);
     }
 
-
-    @Test
-    void testLuaScripts() {
-        DefaultRedisScript<Boolean> redisScript = new DefaultRedisScript<>();
-        ScriptSource scriptSource = new ResourceScriptSource(
-                new ClassPathResource("META-INF/scripts/checkandset.lua"));
-        redisScript.setResultType(Boolean.class);
-        redisScript.setScriptSource(scriptSource);
-
-        // 调用
-        List<String> keys = new ArrayList<>();
-        keys.add("stock");
-        System.out.println(redisTemplate.execute(redisScript,
-                new StringRedisSerializer(), new StringRedisSerializer(), keys, "4", "5"));
-    }
 }

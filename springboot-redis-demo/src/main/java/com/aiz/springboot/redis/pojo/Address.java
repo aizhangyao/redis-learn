@@ -9,7 +9,7 @@ import java.io.Serializable;
 
 /**
  * @ClassName Address
- * @Description TODO
+ * @Description Address实体类
  * @Author ZhangYao
  * @Date Create in 16:09 2022/12/1
  * @Version 1.0

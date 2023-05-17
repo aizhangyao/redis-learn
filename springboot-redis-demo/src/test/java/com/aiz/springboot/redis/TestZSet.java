@@ -31,7 +31,7 @@ public class TestZSet {
     void contextLoads() {
         System.out.println("testZSet");
         RedisConnection connection = redisTemplate.getConnectionFactory().getConnection();
-        redisTemplate.opsForZSet().add("zset-key","tuples",4000);
+        redisTemplate.opsForZSet().add("zset-key", "tuples", 4000);
     }
 
 
