@@ -10,13 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.connection.RedisConnection;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @ClassName TestHash
@@ -75,10 +79,9 @@ public class TestHash {
     void test() {
         String userBuyRecordKey = "o2om:order:buy:0:{9343757782272}:APP";
         Map<String, Object> boughtMap = new HashMap<>();
-        boughtMap.put("ALL-001", 1);
-        boughtMap.put("ALL-002", 2);
-        boughtMap.put("ALL-003", 3);
-        boughtMap.put("ALL-004", 4);
+        for (int i = 1; i <= 100; i++) {
+            boughtMap.put("ALL-" + i, i);
+        }
         redisTemplate.opsForHash().putAll(userBuyRecordKey, boughtMap);
 
 
@@ -99,6 +102,49 @@ public class TestHash {
         Map entries = redisTemplate.opsForHash().entries(userBuyRecordKey);
         System.out.println(JSONObject.toJSONString(entries));
         //redisTemplate.opsForHash().putAll(userBuyRecordKey, boughtMap);
+    }
+
+    /**
+     * 分页
+     */
+    @Test
+    void page() {
+        Integer pageNo = 2;
+        Integer pageSize = 20;
+
+        int startIndex = (pageNo - 1) * pageSize;
+        int maxIndex = pageNo * pageSize;
+
+        ScanOptions scanOptions = ScanOptions.scanOptions().count(1000).build();
+        int count = 0;
+        try (Cursor<Map.Entry<String, String>> cursor = redisTemplate.<String, String>opsForHash().scan("o2om:order:buy:0:{9343757782272}:APP", scanOptions)) {
+            while (cursor.hasNext()) {
+                Map.Entry<String, String> next = cursor.next();
+                if (count < startIndex) {
+                    count++;
+                    continue;
+                }
+                if (count >= maxIndex) {
+                    break;
+                }
+                System.out.println(next.getKey());
+                count++;
+            }
+        } catch (Exception e) {
+
+        }
+    }
+
+    @Test
+    void queryHashKey() {
+        String redisKey = "o2user:notice:0:seriesLaunch:first:LJL004:OikE9EeFceUUYNrWHbY3OuZffQgViDbllfo9Gr7WTCs";
+        String hashKey = "新系列-L2";
+        redisTemplate.opsForHash().get(redisKey, hashKey);
+//        JSONObject obj = JSON.parseObject(v);
+//        String categoryCode = obj.getString("categoryCode");
+//        String secondKey = obj.getString("secondKey");
+//        String contentId = obj.getString("contentId");
+//        System.out.println(categoryCode + "___" + secondKey + "___" + contentId);
     }
 
 }
